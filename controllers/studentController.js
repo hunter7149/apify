@@ -18,13 +18,14 @@ const createStudent = async (req, res) => {
 
 const getStudent = async (req, res) => {
   console.log("This is the request: ", req.body);
-  res.body = req.body;
-  if (!res.body['name']) {
+
+  if (!req.body['email']) {
     res.status(401);
     console.log("Error occurred and status code is", res.statusCode);
     throw new Error("Error");
   } else {
-    res.status(200).json({ name: res.body['name'] });
+    const studentData =await studentRepository.getStudent(req.body['email']);
+    res.status(200).json(studentData);
   }
 };
 

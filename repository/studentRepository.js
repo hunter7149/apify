@@ -16,6 +16,17 @@ const createStudent = async (studentData) => {
   }
 };
 
+const getStudent= async (email) =>{
+  try {
+    const query = 'SELECT * FROM students WHERE email = $1';
+    const values = [email];
+    const result = await client.query(query, values);
+    return result.rows;
+  } catch (error) {
+    throw new Error('Failed to get student data from the database.');
+  }
+}
 module.exports = {
   createStudent,
+  getStudent
 };
