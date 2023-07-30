@@ -34,7 +34,7 @@ const createUser = async (req, res) => {
 
 
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create user.' });
+    res.status(500).json({ error: 'Failed to create user.Maybe user already exist.' });
   }
 };
 
