@@ -2,10 +2,11 @@ const User = require("../entity/users");
 const userRepository = require('../repository/userRepository');
 
 
+
 //Creating an user
 const createUser = async (req, res) => {
   try {
-    const {id, name, email, phone,role } = req.body;
+    const {id, name, email, phone,role,password } = req.body;
 
     if(!id )
     {
@@ -23,12 +24,15 @@ const createUser = async (req, res) => {
     }else if(!role )
     {
         res.status(400).json({ error: 'role field is mandatory' });
+    }else if(!role )
+    {
+        res.status(400).json({ error: 'password field is mandatory' });
     }
     else
     {
         // console.log(res);
         const tempUser = new User(id,name,email,phone,role);
-        const addedstudent = await userRepository.createUser(tempUser);
+        const addedstudent = await userRepository.createUser(tempUser,password);
         res.status(201).json(addedstudent);
     }
 
@@ -135,4 +139,46 @@ const deleteSingleUser=async (req,res)=>
         res.status(500).json({ error: 'Failed to delete user' });
       }
 }
-module.exports={createUser,updateUser,getAllUser,getSingleUser,deleteSingleUser};
+
+//login with access token
+
+const loginReq= async (req,res)=>{
+    const {id,password} = req.body;
+    try {
+      
+    
+        if(!id )
+        {
+            res.status(400).json({ error: 'id field is mandatory' });
+        }
+        else  if(!password )
+        {
+            res.status(400).json({ error: 'password field is mandatory' });
+        }
+      
+        else
+        {
+            // console.log(res);
+            
+            const user = await userRepository.getSingleUser(id);
+            if(user)
+            {
+            const result=await userRepository.loginReq(id,password);
+            res.status(201).json(result);
+            }
+            else
+            {
+                res.status(400).json({ error: 'No user found!' });
+            }
+       
+        }
+    
+    
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get user' });
+      }
+
+}
+
+
+module.exports={createUser,updateUser,getAllUser,getSingleUser,deleteSingleUser,loginReq};

@@ -1,16 +1,22 @@
 
 const dbconnector=require('../database/databaseClient');
+const bcrypt=require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid'); 
 dbconnector.connect();
 
 
-const createUser =async (user) => {
+const createUser =async (user,password) => {
 try{
 
         //Query format : INSERT INTO students (column names) VALUES (indexes of the values of)
         const { id,name, email, phone,role } = user;
-        const query = 'INSERT INTO users (id,name, email, phone,role) VALUES ($1, $2, $3,$4,$5) RETURNING *';
-        const values = [id,name, email, phone,role ];
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const query = 'INSERT INTO users (id,name, email, phone,role,password) VALUES ($1, $2, $3,$4,$5,$6) RETURNING id,name,email,phone,role';
+        const values = [id,name, email, phone,role,hashedPassword ];
         const result = await dbconnector.query(query, values);
+     
         console.log(result);
         return result.rows;
 
@@ -23,7 +29,7 @@ catch(error){
 
 const getAllUser = async () =>{
     try{
-        const query = "SELECT * from users";
+        const query = "SELECT id,name,email,phone from users";
         const result = await dbconnector.query(query);
         return result.rows;
     }
@@ -35,7 +41,7 @@ const getAllUser = async () =>{
 const getSingleUser = async (uid) =>{
     try{
         const id  = uid;
-        const query = `SELECT * from users WHERE id = $1`;
+        const query = `SELECT id, name, email, phone, role FROM users WHERE id = $1`;
         const result = await dbconnector.query(query,[id]);
         return result.rows[0];
     }
@@ -81,9 +87,83 @@ try {    const id=uid;
 throw new Error("Couldn't delete user at R---del");
     }
 }
+const getPass = async (uid)=>{
+    try{
+        const id  = uid;
+        const query = `SELECT password from users WHERE id = $1`;
+        const result = await dbconnector.query(query,[id]);
+        console.log(result.rows[0]);
+        return result.rows[0];
+        
+        console.log(result.rows[0]);
+    }
+    catch(error){
+        throw new Error("Couldn't get user at R----get")
+    }
+}
 
+const getToken = async (uid)=>{
+    try{
+        const id  = uid;
+        const query = `SELECT token,key from logincreds WHERE id = $1`;
+        const result = await dbconnector.query(query,[id]);
+        console.log(result.rows[0]);
+        return result.rows[0];
+     
+    }
+    catch(error){
+        throw new Error("Couldn't get token at R----get")
+    }
+}
+
+const loginReq = async (uid,password) => {
+  
+try{
+    const dbpass = await getPass(uid);
+    if(dbpass)
+    {
+        const isPasswordValid = await bcrypt.compare(password, dbpass.password);
+        if (!isPasswordValid) {
+          return { "error": 'Invalid credentials' };
+        }
+        else{
+        const secretKey = generateSecretKey();
+        const token = jwt.sign({ uid }, secretKey, { expiresIn: '30d' });
+             const query = `INSERT INTO logincreds (id, token,key) VALUES ($1,$2,$3) ON CONFLICT (id) DO UPDATE SET token = EXCLUDED.token,key=EXCLUDED.key RETURNING *`;
+            const values = [uid,token,secretKey];
+            try{
+                const result = await dbconnector.query(query,values);
+                if(result){
+                    return { "status":"success","accessToken":token };
+                }
+             
+            }
+            catch (error){
+                console.log(error);
+            }
+          
+                
+               
+            
+      
+        }
+      
+   
+    }
+    else
+    {
+        return { "status":"failed","accessToken":"Invalid password" };
+    }
+}
+catch(error){
+    throw new Error("Database error");
+}
+}
+function generateSecretKey() {
+    return uuidv4();
+  }
 module.exports={
     createUser,
     getAllUser,
-    getSingleUser,updateSingleUser,deleteUser
+    getSingleUser,updateSingleUser,deleteUser,getPass,loginReq,getToken
 }
