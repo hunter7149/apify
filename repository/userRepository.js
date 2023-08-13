@@ -108,10 +108,10 @@ const getPass = async (uid)=>{
         const id  = uid;
         const query = `SELECT password from users WHERE id = $1`;
         const result = await dbconnector.query(query,[id]);
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
         return result.rows[0];
         
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
     }
     catch(error){
         throw new Error("Couldn't get user at R----get")
@@ -120,10 +120,12 @@ const getPass = async (uid)=>{
 
 const getToken = async (uid)=>{
     try{
+
+        console.log(`Request from ${uid}`)
         const id  = uid;
         const query = `SELECT token,key from logincreds WHERE id = $1`;
         const result = await dbconnector.query(query,[id]);
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
         return result.rows[0];
      
     }
