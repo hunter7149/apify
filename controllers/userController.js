@@ -210,7 +210,7 @@ const createCustomer =async (req,res)=>{
         }
     }}
     catch (error) {
-        res.status(500).json({ error: 'Failed to create customer.Maybe customer already exist.' });
+        res.status(500).json({      "status":"yes","error": 'Failed to create customer.Maybe customer already exist.' });
       }
 }
 const checkUser=async (req,res)=>{

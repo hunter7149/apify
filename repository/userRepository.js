@@ -170,7 +170,7 @@ try{
     }
     else
     {
-        return { "status":"failed","accessToken":"Invalid password" };
+        return { "status":"failed","accessToken":"" };
     }
 }
 catch(error){
