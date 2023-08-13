@@ -9,4 +9,6 @@ router.route('/get').get(userController.getAllUser);
 router.route('/getsingle').get(userController.getSingleUser);
 router.route('/delete').post(userController.deleteSingleUser);
 router.route('/login').post(userController.loginReq);
+router.route('/verify').post(authenticateToken,userController.checkUser);
+router.route('/createCustomer').post(authenticateToken,userController.createCustomer);
 module.exports=router;
