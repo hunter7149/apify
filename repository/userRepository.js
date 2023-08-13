@@ -154,23 +154,23 @@ try{
                 if(result){
                     return { "status":"success","accessToken":token };
                 }
+                else
+                {
+                    return { "status":"failed","accessToken":"" };
+                }
              
             }
             catch (error){
                 console.log(error);
             }
-          
-                
-               
-            
-      
+
         }
       
    
     }
     else
     {
-        return { "status":"failed","accessToken":"" };
+        return { "status":"failed","error":"password doesn't match" };
     }
 }
 catch(error){
