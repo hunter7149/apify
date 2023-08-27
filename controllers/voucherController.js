@@ -44,11 +44,11 @@ const checkVoucher = async (req,res) => {
                       console.log(customResult);
                   } 
               
-                  else if(result['status']=="used")
+                  else if(result[0]['status']=="used")
                   {
                     isUsed=true;
                   }
-                  else if(result['status']=="inactive")
+                  else if(result[0]['status']=="inactive")
                   {
                     isUsed=true;
                   }
