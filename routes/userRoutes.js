@@ -12,5 +12,6 @@ router.route('/delete').post(userController.deleteSingleUser);
 router.route('/login').post(userController.loginReq);
 router.route('/verify').post(authenticateToken,userController.checkUser);
 router.route('/createCustomer').post(authenticateToken,userController.createCustomer);
-router.route('/checkVoucher').post(voucherController.checkVoucher);
+router.route('/checkVoucher').post(authenticateToken,voucherController.checkVoucher);
+router.route('/updateVoucher').post(authenticateToken,voucherController.updateVoucher);
 module.exports=router;
