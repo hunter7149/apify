@@ -81,8 +81,8 @@ const checkVoucher = async (req,res) => {
         }
         catch(e){
           res.status(201).json({"status":"no",
-          "data":"Database error.No code found"});
-            throw new Error("DB error")
+          "data":"Voucher not found"});
+            // throw new Error("DB error")
         }
     }
 }
