@@ -206,6 +206,8 @@ const createCustomer =async (name,phone,email) => {
 function generateSecretKey() {
     return uuidv4();
   }
+
+  
 module.exports={
     createUser,
     getAllUser,
