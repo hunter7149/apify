@@ -46,10 +46,26 @@ const getSingleUser = async (uid) =>{
         return result.rows[0];
     }
     catch(error){
-        throw new Error("Couldn't get user at R----get")
+        throw new Error("Couldn't get user at R----get");
     }
 }
-
+const getSingleUserByPhone = async (phone)=>{
+    try{
+        const phoneNumber = phone;
+        const query = `SELECT name,phone,email FROM customer WHERE phone=$1`;
+        const result = await dbconnector.query(query,[phoneNumber]);
+     
+        if(result.rows.length!=0){
+            return result.rows[0];
+        }
+        else{
+            return [];
+        }
+    }
+    catch (error){
+        throw new Error("Couldn't get user by phone!");
+    }
+}
 const updateSingleUser = async (user)=>{
     try{
         const{id,name,email,phone,role} = user;
@@ -92,10 +108,10 @@ const getPass = async (uid)=>{
         const id  = uid;
         const query = `SELECT password from users WHERE id = $1`;
         const result = await dbconnector.query(query,[id]);
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
         return result.rows[0];
         
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
     }
     catch(error){
         throw new Error("Couldn't get user at R----get")
@@ -104,10 +120,12 @@ const getPass = async (uid)=>{
 
 const getToken = async (uid)=>{
     try{
+
+        console.log(`Request from ${uid}`)
         const id  = uid;
         const query = `SELECT token,key from logincreds WHERE id = $1`;
         const result = await dbconnector.query(query,[id]);
-        console.log(result.rows[0]);
+        // console.log(result.rows[0]);
         return result.rows[0];
      
     }
@@ -136,34 +154,60 @@ try{
                 if(result){
                     return { "status":"success","accessToken":token };
                 }
+                else
+                {
+                    return { "status":"failed","accessToken":"" };
+                }
              
             }
             catch (error){
                 console.log(error);
             }
-          
-                
-               
-            
-      
+
         }
       
    
     }
     else
     {
-        return { "status":"failed","accessToken":"Invalid password" };
+        return { "status":"failed","error":"password doesn't match" };
     }
 }
 catch(error){
     throw new Error("Database error");
 }
 }
+const createCustomer =async (name,phone,email) => {
+    try{
+    
+            //Query format : INSERT INTO students (column names) VALUES (indexes of the values of)
+       
+
+    
+            const query = 'INSERT INTO customer (name, email, phone) VALUES ($1, $2, $3) RETURNING name,email,phone';
+            const values = [name, email, phone];
+            const result = await dbconnector.query(query, values);
+         
+            console.log(result);
+            if(result.rows.length!=0){
+                return result.rows[0];
+            }
+            else{
+                return [];
+            }
+            
+    
+       
+    }
+    catch(error){
+     throw new Error("Customer creation failed at R----cret");
+    }
+    }
 function generateSecretKey() {
     return uuidv4();
   }
 module.exports={
     createUser,
     getAllUser,
-    getSingleUser,updateSingleUser,deleteUser,getPass,loginReq,getToken
+    getSingleUser,updateSingleUser,deleteUser,getPass,loginReq,getToken,getSingleUserByPhone,createCustomer
 }
